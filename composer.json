@@ -1,5 +1,5 @@
 {
-	"name": "posthog/posthog-php",
+	"name": "ap-bookingkit/posthog-php",
 	"version": "3.0.0",
 	"description": "PostHog PHP Library",
 	"keywords": [

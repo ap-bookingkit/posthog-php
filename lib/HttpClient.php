@@ -40,13 +40,22 @@ class HttpClient
      */
     private $curlTimeoutMilliseconds;
 
+    /**
+     * @param string $host
+     * @param bool $useSsl
+     * @param int $maximumBackoffDuration
+     * @param bool $compressRequests
+     * @param bool $debug
+     * @param Closure|null $errorHandler
+     * @param int $curlTimeoutMilliseconds
+     */
     public function __construct(
         string $host,
         bool $useSsl = true,
         int $maximumBackoffDuration = 10000,
         bool $compressRequests = false,
         bool $debug = false,
-        ?Closure $errorHandler = null,
+        Closure $errorHandler = null,
         int $curlTimeoutMilliseconds = 750
     ) {
         $this->host = $host;
@@ -64,7 +73,7 @@ class HttpClient
      * @param array $extraHeaders
      * @return HttpResponse
      */
-    public function sendRequest(string $path, ?string $payload, array $extraHeaders = []): HttpResponse
+    public function sendRequest(string $path, string $payload, array $extraHeaders = []): HttpResponse
     {
         $protocol = $this->useSsl ? "https://" : "http://";
 

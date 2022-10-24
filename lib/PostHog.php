@@ -6,20 +6,24 @@ use Exception;
 
 class PostHog
 {
-    public const VERSION = '2.1.0';
-    public const ENV_API_KEY = "POSTHOG_API_KEY";
-    public const ENV_HOST = "POSTHOG_HOST";
+    const VERSION = '2.1.0';
+    const ENV_API_KEY = "POSTHOG_API_KEY";
+    const ENV_HOST = "POSTHOG_HOST";
 
-    private static Client $client;
+    /**
+     * @var Client
+     */
+    private static $client;
 
     /**
      * Initializes the default client to use. Uses the libcurl consumer by default.
      * @param string|null $apiKey your project's API key
      * @param array|null $options passed straight to the client
      * @param Client|null $client
+     * @param string|null $personalAPIKey
      * @throws Exception
      */
-    public static function init(?string $apiKey = null, ?array $options = [], ?Client $client = null, ?string $personalAPIKey = null): void
+    public static function init(string $apiKey = null, array $options = [], Client $client = null, string $personalAPIKey = null)
     {
         if (null === $client) {
             $apiKey = $apiKey ?: getenv(self::ENV_API_KEY);
@@ -111,7 +115,7 @@ class PostHog
      * @param array $groups
      * @param array $personProperties
      * @param array $groupProperties
-     * @return boolean
+     * @return null | bool
      * @throws Exception
      */
     public static function isFeatureEnabled(
@@ -122,7 +126,7 @@ class PostHog
         array $groupProperties = array(),
         bool $onlyEvaluateLocally = false,
         bool $sendFeatureFlagEvents = true
-    ): null | bool {
+    ) {
         self::checkClient();
         return self::$client->isFeatureEnabled($key, $distinctId, $groups, $personProperties, $groupProperties, $onlyEvaluateLocally, $sendFeatureFlagEvents);
     }
@@ -146,7 +150,7 @@ class PostHog
         array $groupProperties = array(),
         bool $onlyEvaluateLocally = false,
         bool $sendFeatureFlagEvents = true
-    ): null | bool | string {
+    ) {
         self::checkClient();
         return self::$client->GetFeatureFlag($key, $distinctId, $groups, $personProperties, $groupProperties, $onlyEvaluateLocally, $sendFeatureFlagEvents);
     }
@@ -238,7 +242,11 @@ class PostHog
         return self::$client->flush();
     }
 
-    private static function cleanHost(?string $host): string
+    /**
+     * @param string|null $host
+     * @return string
+     */
+    private static function cleanHost(string $host)
     {
         if (!isset($host)) {
             return $host;

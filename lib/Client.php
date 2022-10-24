@@ -12,7 +12,7 @@ const SIZE_LIMIT = 50_000;
 
 class Client
 {
-    private const CONSUMERS = [
+    const CONSUMERS = [
         "socket" => Socket::class,
         "file" => File::class,
         "fork_curl" => ForkCurl::class,
@@ -65,7 +65,7 @@ class Client
      * @param array $options array of consumer options [optional]
      * @param HttpClient|null $httpClient
      */
-    public function __construct(string $apiKey, array $options = [], ?HttpClient $httpClient = null, string $personalAPIKey = null)
+    public function __construct(string $apiKey, array $options = [], HttpClient $httpClient = null, string $personalAPIKey = null)
     {
         $this->apiKey = $apiKey;
         $this->personalAPIKey = $personalAPIKey;
@@ -150,7 +150,7 @@ class Client
      * @param array $groups
      * @param array $personProperties
      * @param array $groupProperties
-     * @return bool
+     * @return null | bool
      * @throws Exception
      */
     public function isFeatureEnabled(
@@ -161,7 +161,7 @@ class Client
         array $groupProperties = array(),
         bool $onlyEvaluateLocally = false,
         bool $sendFeatureFlagEvents = true
-    ): null | bool {
+    ) {
         $result = $this->getFeatureFlag($key, $distinctId, $groups, $personProperties, $groupProperties, $onlyEvaluateLocally, $sendFeatureFlagEvents);
 
         if (is_null($result)) {
@@ -179,7 +179,7 @@ class Client
      * @param array $groups
      * @param array $personProperties
      * @param array $groupProperties
-     * @return bool | string
+     * @return null | bool | string
      * @throws Exception
      */
     public function getFeatureFlag(
@@ -190,7 +190,7 @@ class Client
         array $groupProperties = array(),
         bool $onlyEvaluateLocally = false,
         bool $sendFeatureFlagEvents = true
-    ): null | bool | string {
+    ) {
         $result = null;
 
         foreach ($this->featureFlags as $flag) {
@@ -296,13 +296,22 @@ class Client
         return $response;
     }
 
+    /**
+     * @param array $featureFlag
+     * @param string $distinctId
+     * @param array $groups
+     * @param array $personProperties
+     * @param array $groupProperties
+     * @return bool|string
+     * @throws InconclusiveMatchException
+     */
     private function computeFlagLocally(
         array $featureFlag,
         string $distinctId,
         array $groups = array(),
         array $personProperties = array(),
         array $groupProperties = array()
-    ): bool | string {
+    ) {
         if ($featureFlag["ensure_experience_continuity"] ?? false) {
             throw new InconclusiveMatchException("Flag has experience continuity enabled");
         }
